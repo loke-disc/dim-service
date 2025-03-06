@@ -1,0 +1,69 @@
+{
+  "workflowId": "dim_workflow",
+  "tasks": [
+    {
+      "taskId": "101",
+      "description": "Process AIML",
+      "serviceType": "domain",
+      "className": "platform.activities.GenericActivities",
+      "method": "processAIML",
+      "conditions": [],
+      "order": 1,
+      "activityOptions": {
+        "taskQueue": "dim-task-queue",
+        "startToCloseTimeout": 60,
+        "retryOptions": {
+          "maximumAttempts": 3
+        }
+      }
+    },
+    {
+      "taskId": "102",
+      "description": "Process CJarvis",
+      "serviceType": "domain",
+      "className": "platform.activities.GenericActivities",
+      "method": "processCJARVIS",
+      "conditions": ["101"],
+      "order": 2,
+      "activityOptions": {
+        "taskQueue": "dim-task-queue",
+        "startToCloseTimeout": 60,
+        "retryOptions": {
+          "maximumAttempts": 3
+        }
+      }
+    },
+    {
+      "taskId": "103",
+      "description": "Registration",
+      "serviceType": "platform",
+      "className": "platform.activities.PlatformActivities",
+      "method": "register",
+      "conditions": ["102"],
+      "order": 3,
+      "activityOptions": {
+        "taskQueue": "platform-task-queue",
+        "startToCloseTimeout": 60,
+        "retryOptions": {
+          "maximumAttempts": 3
+        }
+      }
+    },
+    {
+      "taskId": "104",
+      "description": "Notification",
+      "serviceType": "platform",
+      "className": "platform.activities.PlatformActivities",
+      "method": "notify",
+      "conditions": ["103"],
+      "order": 4,
+      "activityOptions": {
+        "taskQueue": "platform-task-queue",
+        "startToCloseTimeout": 60,
+        "retryOptions": {
+          "maximumAttempts": 3
+        }
+      }
+    }
+  ]
+}
